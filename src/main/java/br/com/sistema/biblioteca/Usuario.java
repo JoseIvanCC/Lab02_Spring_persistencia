@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 import br.com.sistema.exception.StringInvalidaException;
 
@@ -40,13 +41,13 @@ public class Usuario implements Serializable{
 	@Column(name = "senha")
 	private String senha;
 	
-	@Column(name = "musitecaUsuario")
+	@OneToOne(mappedBy = "usuario")
 	private Musiteca musitecaUsuario;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id")
-	private long id;
+	private Long id;
 	
 	public Usuario(String nome, String email, String senha) throws StringInvalidaException {
 		if (!(Pattern.matches("[a-zA-Z0-9._]+@+[a-zA-Z0-9.]+.{2,7}", email))) {
@@ -62,7 +63,7 @@ public class Usuario implements Serializable{
 		
 	}
 	
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 

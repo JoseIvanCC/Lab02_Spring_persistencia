@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,8 +28,9 @@ import br.com.sistema.repository.MusitecaRepository;
 import br.com.sistema.repository.PlaylistRepository;
 import br.com.sistema.repository.UsuarioRepository;
 
-@CrossOrigin
+@CrossOrigin(origins = "*")
 @RestController
+@RequestMapping("/")
 public class MusitecaController {
 	
 	@Autowired
@@ -47,7 +50,6 @@ public class MusitecaController {
 		
 	}
 	
-
 	@RequestMapping(value = "/addMusicaArtista", method = RequestMethod.GET)
 	public String addMusicaArtista(@RequestParam(value = "nome") String nome,
 		@RequestParam(value="ultimaMusica") String ultimaMusica,
@@ -371,7 +373,7 @@ public class MusitecaController {
 			@RequestParam(value = "email") String email, @RequestParam(value = "senha") String senha) {
 		Usuario usuario = logar(email, senha);
 		if (usuario == null) {
-			return new ResponseEntity<Usuario>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<Usuario>(HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<Usuario>(usuario, HttpStatus.OK);
 	}
@@ -396,9 +398,10 @@ public class MusitecaController {
 			Usuario usuario;
 			try {
 				usuario = new Usuario(nome, email, senha);
+				usuario.setMusiteca(null);
 				Musiteca musiteca = usuario.getMusiteca();
 				this.usuarioRepository.save(usuario);
-				this.musitecaRepository.save(musiteca);
+				//this.musitecaRepository.save(musiteca);
 				return "Usuario cadastrado(a) com sucesso!";
 			} catch (StringInvalidaException e) {
 				return e.getMessage();

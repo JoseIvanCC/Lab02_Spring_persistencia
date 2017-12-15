@@ -14,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Musiteca implements Serializable{
@@ -34,6 +35,9 @@ public class Musiteca implements Serializable{
 	@JoinTable(name = "listaMusicasMusiteca")
 	@OneToMany(cascade = CascadeType.ALL, targetEntity = Musica.class)
 	private Set<Musica> musicasMusiteca;
+	
+	@OneToOne
+	private Usuario usuario;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
