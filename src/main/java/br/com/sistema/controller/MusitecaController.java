@@ -369,8 +369,8 @@ public class MusitecaController {
 	}
 	
 	@RequestMapping(value = "/loginUsuario", method = RequestMethod.POST)
-	public ResponseEntity<Usuario> loginUsuario(@RequestParam(value = "nome") String nome,
-			@RequestParam(value = "email") String email, @RequestParam(value = "senha") String senha) {
+	public ResponseEntity<Usuario> loginUsuario(@RequestParam(value = "email") String email,
+			@RequestParam(value = "senha") String senha) {
 		Usuario usuario = logar(email, senha);
 		if (usuario == null) {
 			return new ResponseEntity<Usuario>(HttpStatus.BAD_REQUEST);
@@ -401,7 +401,7 @@ public class MusitecaController {
 				usuario.setMusiteca(null);
 				Musiteca musiteca = usuario.getMusiteca();
 				this.usuarioRepository.save(usuario);
-				//this.musitecaRepository.save(musiteca);
+				this.musitecaRepository.save(musiteca);
 				return "Usuario cadastrado(a) com sucesso!";
 			} catch (StringInvalidaException e) {
 				return e.getMessage();
