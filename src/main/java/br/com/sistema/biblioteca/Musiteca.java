@@ -2,12 +2,15 @@ package br.com.sistema.biblioteca;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,8 +21,9 @@ import javax.persistence.OneToOne;
 
 @Entity
 public class Musiteca implements Serializable{
-	private static final long serialVersionUID = -5405948835034235210L;
-	
+
+	private static final long serialVersionUID = 1L;
+
 	@JoinTable(name = "artistasMusiteca")
 	@OneToMany(cascade = CascadeType.ALL, targetEntity = Artista.class)
 	private Set<Artista> artistasMusiteca;
@@ -28,9 +32,9 @@ public class Musiteca implements Serializable{
 	@OneToMany(cascade = CascadeType.ALL, targetEntity = Artista.class)
 	private Set<Artista> artistasFavMusiteca;
 	
+	@ElementCollection(targetClass = Musica.class)
 	@JoinTable(name = "playlistsMusiteca")
-	@OneToMany(cascade = CascadeType.ALL, targetEntity = Playlist.class)
-	private Set<Playlist> playlists;
+	private Map<String,List<Musica>> playlists;
 	
 	@JoinTable(name = "listaMusicasMusiteca")
 	@OneToMany(cascade = CascadeType.ALL, targetEntity = Musica.class)
@@ -44,15 +48,16 @@ public class Musiteca implements Serializable{
 	@Column(name = "id")
 	private long id;
 	
-	
-	public Musiteca() {
+	public Musiteca(String nomeMusiteca) {
 		this.artistasMusiteca = new HashSet<Artista>();
 		this.artistasFavMusiteca = new HashSet<Artista>();
-		this.playlists = new HashSet<Playlist>();
+		this.playlists = new HashMap<String,List<Musica>>();
 		this.musicasMusiteca = new HashSet<Musica>();
 	}
 	
-			
+	protected Musiteca() {
+		
+	}
 
 	public Set<Artista> getArtistasMusiteca() {
 		return artistasMusiteca;
@@ -78,19 +83,15 @@ public class Musiteca implements Serializable{
 		this.artistasFavMusiteca = artistasFavMusiteca;
 	}
 
-	public Set<Playlist> getPlaylists() {
+	public Map<String,List<Musica>> getPlaylists() {
 		return playlists;
 	}
 
-	public void setPlaylists(Set<Playlist> playlists) {
+	public void setPlaylists(Map<String,List<Musica>> playlists) {
 		this.playlists = playlists;
 	}
 	
-	public List<Playlist> getListaPlaylists() {
-		List<Playlist> playlists = new ArrayList<Playlist>();
-		for (Playlist playlist : playlists) {
-			playlists.add(playlist);
-		}
+	public Map<String,List<Musica>> getListaPlaylists() {
 		return playlists;
 	}
 
@@ -119,9 +120,9 @@ public class Musiteca implements Serializable{
 		}
 	}
 	
-	public String addPlaylist(Playlist playlist) {
-		if (this.playlists.contains(playlist) == false) {
-			this.playlists.add(playlist);
+	public String addPlaylist(List<Musica> playlist, String nome) {
+		if (this.playlists.containsValue(playlist) == false) {
+			this.playlists.put(nome, playlist);
 			return "Playlist cadastrada com sucesso.";
 		} else {
 			return "playlist já existe no sistema.";
@@ -236,49 +237,48 @@ public class Musiteca implements Serializable{
 	}
 	
 	public void removerMusicaDaPlaylist(String nomeMusica, String nomePlaylist) {
-		for (Playlist playlist : this.playlists) {
-			if (playlist.getNome().equalsIgnoreCase(nomePlaylist)) {
-				playlist.removerMusica(nomeMusica);
+		for(Musica musica : playlists.get(nomePlaylist)) {
+			if(musica.getNome().equalsIgnoreCase(nomeMusica)) {
+				playlists.get(nomePlaylist).remove(musica);
+				break;
 			}
 		}
 	}
 	
 	
-	public Playlist getPlaylist(String nomePlaylist) {
-		for (Playlist playlist : playlists) {
-			if (playlist.getNome().equalsIgnoreCase(nomePlaylist)) {
-				return playlist;
-			}
-		}
-		return null;
+	public List<Musica> getPlaylist(String nomePlaylist) {
+		return this.playlists.get(nomePlaylist);
 	}
 	
 	
 	public String addMusicaPlaylist(String nomeMusica, String nomePlaylist) {
-		if (this.containsMusicPlaylist(nomeMusica, nomePlaylist)) {
-			return "Música já existente na playlist.";
-		} else {
-			for (Playlist playlist : playlists) {
-				if (playlist.getNome().equalsIgnoreCase(nomePlaylist)) {
-					for (Musica musica : musicasMusiteca) {
-						if (musica.getNome().equalsIgnoreCase(nomeMusica)) {
-							playlist.addMusica(musica);
-							return "Música adicionada com sucesso.";
-						}
-					}
-				}
-			}
+		List<Musica>playlist = this.playlists.get(nomePlaylist);
+		
+		Musica musica = this.getMusicasPorNome(nomeMusica);
+		if (musica == null) {
+			
+			return "Música não foi cadastrada.";
 		}
-		return "Música não foi cadastrada.";
+		if(!playlist.contains(musica)) {
+			playlist.add(musica);
+			return "Musica adicionada na playlist";
+		}
+		
+		return "Musica já está na playlist";
 	}
 	
-	public void removerPlaylist(Playlist playlist) {
-		this.playlists.remove(playlist);
+	public void removerPlaylist(String nomePlaylist) {
+		this.playlists.remove(nomePlaylist);
 	}
 	
 	public boolean containsMusicPlaylist(String nomeMusica, String nomePlaylist) {
-		Playlist playlist = this.getPlaylist(nomePlaylist);
-		return playlist.contemMusica(nomeMusica);
+		List<Musica> playlist = this.getPlaylist(nomePlaylist);
+		for (Musica musica : playlist) {
+			if(musica.getNome().equalsIgnoreCase(nomeMusica)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public void adicionarMusica(Musica musica) {
@@ -287,18 +287,18 @@ public class Musiteca implements Serializable{
 		}
 	}
 	
-	public List<Musica> getMusicasPorNome(String nomeMusica) {
-		List<Musica> listPerName = new ArrayList<>();
+	public Musica getMusicasPorNome(String nomeMusica) {
+		
 		for (Musica musica : musicasMusiteca) {
 			if (musica.getNome().equalsIgnoreCase(nomeMusica)) {
-				listPerName.add(musica);
+				return musica;
 			}
 		}
-		return listPerName;
+		return null;
 	}
 	
-	public boolean containsPlaylist(Playlist playlist) {
-		return playlists.contains(playlist);
+	public boolean containsPlaylist(String nomePlaylist) {
+		return playlists.keySet().contains(nomePlaylist);
 	}
 	
 	public boolean containsMusic(Musica musica) {
@@ -323,18 +323,12 @@ public class Musiteca implements Serializable{
 	
 	public void removerPlaylists(List<String> listaPlaylist) {
 		for (String nomePlaylist : listaPlaylist) {
-			removerMusicasPlaylist(nomePlaylist);
-			Playlist playlist = getPlaylist(nomePlaylist);
-			this.removerPlaylist(playlist);
+			this.playlists.remove(nomePlaylist);
 		}
 	}
 	
 	public void removerMusicasPlaylist(String nomePlaylist) {
-		for (Playlist playlist : playlists) {
-			if (playlist.getNome().equalsIgnoreCase(nomePlaylist)) {
-				playlist.removerMusicas();
-			}
-		}
+		this.playlists.replace(nomePlaylist, new ArrayList<Musica>());
 	}
 	
 	public List<Artista> buscarArtistas(String nomeArtista) {

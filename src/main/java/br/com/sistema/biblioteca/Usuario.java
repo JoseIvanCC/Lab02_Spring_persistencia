@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -18,19 +19,12 @@ import br.com.sistema.exception.StringInvalidaException;
 
 @Entity
 public class Usuario implements Serializable{
-	private static final long serialVersionUID = -892684307592807505L;
+
 	
-	/*private String nome;
-	private HashMap<String, Album> albuns;
-	private HashSet<Playlist> playlists;
-	private HashSet<Artista> artistasFavoritos;*/
-	
-	/*public Usuario(String nome) {
-		this.nome = nome;
-		this.albuns = new HashMap<String, Album>();
-		this.playlists = new HashSet<Playlist>();
-		this.artistasFavoritos = new HashSet<Artista>();
-	}*/
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	
 	@Column(name = "nome")
 	String nome;
@@ -56,7 +50,7 @@ public class Usuario implements Serializable{
 		this.nome = nome;
 		this.email = email;
 		this.senha = senha;
-		this.musitecaUsuario= new Musiteca();
+		this.musitecaUsuario = new Musiteca("Whatever");
 	}
 	
 	public Usuario() {
@@ -128,8 +122,8 @@ public class Usuario implements Serializable{
 		return "Usuario (Nome: "+getNome()+", Email: "+getEmail()+", Senha: "+getSenha()+")";
 	}
 	
-	public String addPlaylist(Playlist playlist) {
-		return this.musitecaUsuario.addPlaylist(playlist);
+	public String addPlaylist(List<Musica> playlist, String nomePlaylist) {
+		return this.musitecaUsuario.addPlaylist(playlist, nomePlaylist);
 	}
 	
 	public String addArtista(Artista artista) {
@@ -176,7 +170,7 @@ public class Usuario implements Serializable{
 		return this.musitecaUsuario.buscarArtistas(nome);
 	}
 	
-	public List<Musica> getMusicasPorNome(String nomeMusica) {
+	public Musica getMusicasPorNome(String nomeMusica) {
 		return this.musitecaUsuario.getMusicasPorNome(nomeMusica);
 	}
 	
@@ -192,16 +186,5 @@ public class Usuario implements Serializable{
 		this.musitecaUsuario.adicionarMusica(musica);
 	}
 	
-	public Set<Artista> getConjuntoArtistasFavoritos() {
-		return this.musitecaUsuario.getArtistasFavMusiteca();
-	}
-	
-	public List<Playlist> getListaPlaylists() {
-		return this.musitecaUsuario.getListaPlaylists();
-	}
-	
-	public List<Artista> getListaArtista() {
-		return this.musitecaUsuario.getListaArtistas();
-	}
 	
 }

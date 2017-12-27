@@ -18,7 +18,12 @@ import javax.persistence.OneToMany;
 @Entity
 public class Artista implements Serializable{
 	
-	private static final long serialVersionUID = -6694357995414174679L;
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id")

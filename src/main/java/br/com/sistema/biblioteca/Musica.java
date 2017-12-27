@@ -15,7 +15,11 @@ import javax.persistence.ManyToMany;
 public class Musica implements Serializable{
 	
 
-	private static final long serialVersionUID = 2559743162659965528L;
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "idMusica")

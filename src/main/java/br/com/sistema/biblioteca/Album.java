@@ -16,7 +16,11 @@ import javax.persistence.OneToMany;
 @Entity
 public class Album implements Serializable{
 	
-	private static final long serialVersionUID = -4903220190762272317L;
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id")

@@ -1,7 +1,11 @@
 package br.com.sistema.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,19 +22,17 @@ import br.com.sistema.biblioteca.Album;
 import br.com.sistema.biblioteca.Artista;
 import br.com.sistema.biblioteca.Musica;
 import br.com.sistema.biblioteca.Musiteca;
-import br.com.sistema.biblioteca.Playlist;
 import br.com.sistema.biblioteca.Usuario;
 import br.com.sistema.exception.StringInvalidaException;
 import br.com.sistema.repository.AlbumRepository;
 import br.com.sistema.repository.ArtistaRepository;
 import br.com.sistema.repository.MusicaRepository;
 import br.com.sistema.repository.MusitecaRepository;
-import br.com.sistema.repository.PlaylistRepository;
 import br.com.sistema.repository.UsuarioRepository;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/")
+//@RequestMapping("/")
 public class MusitecaController {
 	
 	@Autowired
@@ -41,8 +43,6 @@ public class MusitecaController {
 	private ArtistaRepository artistaRepository;
 	@Autowired
 	private MusitecaRepository musitecaRepository;
-	@Autowired
-	private PlaylistRepository playlistRepository;
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 	
@@ -239,15 +239,15 @@ public class MusitecaController {
 	}
 	
 	@RequestMapping(value = "/buscarMusicaPlaylists", method = RequestMethod.POST)
-	public ResponseEntity<List<Musica>> buscarMusicaPlaylists(@RequestParam(value = "nomeMusica") String nomeMusica,
+	public ResponseEntity<Musica> buscarMusicaPlaylists(@RequestParam(value = "nomeMusica") String nomeMusica,
 			@RequestParam(value = "emailUsuario") String emailUsuario) {
 		Usuario usuario = findUsuario(emailUsuario);
 		if (usuario != null) {
-			List<Musica> musica = usuario.getMusicasPorNome(nomeMusica);
-			return new ResponseEntity<List<Musica>>(musica, HttpStatus.OK);
+			Musica musica = usuario.getMusicasPorNome(nomeMusica);
+			return new ResponseEntity<Musica>(musica, HttpStatus.OK);
 		} else {
-			List<Musica> musica = new ArrayList<>();
-			return new ResponseEntity<List<Musica>>(musica, HttpStatus.OK);
+			Musica musica = null;
+			return new ResponseEntity<Musica>(musica, HttpStatus.OK);
 		}
 	}
 	
@@ -266,15 +266,15 @@ public class MusitecaController {
 	}
 	
 	@RequestMapping(value = "/carregarPlaylists", method = RequestMethod.POST)
-	public ResponseEntity<List<Playlist>> carregarPlaylists(@RequestParam(value = "emailUsuario") String emailUsuario) {
+	public ResponseEntity<Map<String,List<Musica>>> carregarPlaylists(@RequestParam(value = "emailUsuario") String emailUsuario) {
 
 		Usuario usuario = findUsuario(emailUsuario);
-		if (usuario != null && usuario.getListaPlaylists().size() != 0) {
-			List<Playlist> playlists = usuario.getListaPlaylists();
-			return new ResponseEntity<List<Playlist>>(playlists, HttpStatus.OK);
+		if (usuario != null) {
+			Map<String,List<Musica>> playlists = usuario.getMusiteca().getListaPlaylists();
+			return new ResponseEntity<Map<String,List<Musica>>>(playlists, HttpStatus.OK);
 		} else {
-			List<Playlist> playlists = new ArrayList<Playlist>();
-			return new ResponseEntity<List<Playlist>>(playlists, HttpStatus.OK);
+			Map<String,List<Musica>> playlists = new HashMap<String,List<Musica>>();
+			return new ResponseEntity<Map<String,List<Musica>>>(playlists, HttpStatus.OK);
 		}
 
 	}
@@ -283,8 +283,8 @@ public class MusitecaController {
 	public ResponseEntity<List<Artista>> carregarArtista(@RequestParam(value = "emailUsuario") String emailUsuario) {
 
 		Usuario usuario = findUsuario(emailUsuario);
-		if (usuario != null && usuario.getListaPlaylists().size() != 0) {
-			List<Artista> artista = usuario.getListaArtista();
+		if (usuario != null) {
+			List<Artista> artista = usuario.getMusiteca().getListaArtistas();
 			return new ResponseEntity<List<Artista>>(artista, HttpStatus.OK);
 		} else {
 			List<Artista> artista = new ArrayList<Artista>();
@@ -299,9 +299,7 @@ public class MusitecaController {
 		Usuario usuario = findUsuario(emailUsuario);
 		Musiteca musiteca = findMusiteca(usuario);
 		
-		for (String nomeP : listaPlaylist) {
-			this.playlistRepository.delete(musiteca.getPlaylist(nomeP));
-		}
+		
 		usuario.removerPlaylist(listaPlaylist);
 		musiteca.removerPlaylists(listaPlaylist);
 		musitecaRepository.save(musiteca);
@@ -314,14 +312,8 @@ public class MusitecaController {
 		
 		Usuario usuario = findUsuario(emailUsuario);
 		usuario.removerMusicaPlaylist(nomeMusica, nomePlaylist);
-		Musiteca musiteca = findMusiteca(usuario);
-		
-		for (Playlist p : musiteca.getListaPlaylists()) {
-			if (p.getNome().equalsIgnoreCase(nomePlaylist)) {
-				p.removerMusica(nomeMusica);
-			}
-		}
-		this.musitecaRepository.save(musiteca);
+
+		this.usuarioRepository.save(usuario);
 	}
 	
 	@RequestMapping(value = "/buscarArtistaFavorito", method = RequestMethod.POST)
@@ -356,13 +348,11 @@ public class MusitecaController {
 		if (usuario == null) {
 			return "Você precisa estar logado para adicionar uma playlist.";
 		} else {
-			Musiteca musiteca = findMusiteca(usuario);
-			Playlist playlist = new Playlist(nome);
-			String mnsg = usuario.addPlaylist(playlist);
+			List<Musica> playlist = new ArrayList<Musica>();
+			String mnsg = usuario.addPlaylist(playlist, nome);
 			if (mnsg == "Playlist cadastrado(a) com sucesso.") {
-				musiteca.addPlaylist(playlist);
-				playlistRepository.save(playlist);
-				this.musitecaRepository.save(musiteca);
+				
+				this.usuarioRepository.save(usuario);
 			}
 			return mnsg;
 		}
@@ -372,8 +362,9 @@ public class MusitecaController {
 	public ResponseEntity<Usuario> loginUsuario(@RequestParam(value = "email") String email,
 			@RequestParam(value = "senha") String senha) {
 		Usuario usuario = logar(email, senha);
+		System.out.println(usuario);
 		if (usuario == null) {
-			return new ResponseEntity<Usuario>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<Usuario>(usuario, HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<Usuario>(usuario, HttpStatus.OK);
 	}
@@ -395,13 +386,12 @@ public class MusitecaController {
 		if (existeEmail(email)) {
 			return "Email já existe no sistema!";
 		} else {
-			Usuario usuario;
 			try {
-				usuario = new Usuario(nome, email, senha);
-				usuario.setMusiteca(null);
+				Usuario usuario = new Usuario(nome, email, senha);
+				//Musiteca musiteca = new Musiteca(usuario);
 				Musiteca musiteca = usuario.getMusiteca();
-				this.usuarioRepository.save(usuario);
 				this.musitecaRepository.save(musiteca);
+				this.usuarioRepository.save(usuario);
 				return "Usuario cadastrado(a) com sucesso!";
 			} catch (StringInvalidaException e) {
 				return e.getMessage();
