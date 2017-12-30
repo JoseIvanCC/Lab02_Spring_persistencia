@@ -40,7 +40,7 @@ public class Musiteca implements Serializable{
 	@OneToMany(cascade = CascadeType.ALL, targetEntity = Musica.class)
 	private Set<Musica> musicasMusiteca;
 	
-	@OneToOne
+	@OneToOne(mappedBy = "musitecaUsuario")
 	private Usuario usuario;
 	
 	@Id
@@ -252,11 +252,10 @@ public class Musiteca implements Serializable{
 	
 	
 	public String addMusicaPlaylist(String nomeMusica, String nomePlaylist) {
-		List<Musica>playlist = this.playlists.get(nomePlaylist);
-		
+		List<Musica> playlist = this.playlists.get(nomePlaylist);
 		Musica musica = this.getMusicasPorNome(nomeMusica);
+		
 		if (musica == null) {
-			
 			return "Música não foi cadastrada.";
 		}
 		if(!playlist.contains(musica)) {
@@ -288,7 +287,6 @@ public class Musiteca implements Serializable{
 	}
 	
 	public Musica getMusicasPorNome(String nomeMusica) {
-		
 		for (Musica musica : musicasMusiteca) {
 			if (musica.getNome().equalsIgnoreCase(nomeMusica)) {
 				return musica;

@@ -34,7 +34,7 @@ import br.com.sistema.repository.UsuarioRepository;
 @RestController
 //@RequestMapping("/")
 public class MusitecaController {
-	
+	///
 	@Autowired
 	private MusicaRepository musicaRepository;
 	@Autowired
@@ -92,7 +92,7 @@ public class MusitecaController {
 			return mnsg;
 		}
 	}
-	
+	@RequestMapping(value = "/addArtista", method = RequestMethod.POST)
 	public String addArtista(@RequestParam(value="nome") String nome, @RequestParam(value="foto") String foto,
 			@RequestParam(value = "emailUsuario") String emailUsuario) {
 		Usuario usuario = findUsuario(emailUsuario);
@@ -175,7 +175,7 @@ public class MusitecaController {
 		}
 	}
 	
-	@RequestMapping(value = "/addMusica", method = RequestMethod.GET)
+	@RequestMapping(value = "/addMusica", method = RequestMethod.POST)
 	public String addMusica(@RequestParam(value="nome") String nome,
 			@RequestParam(value= "duracao") String duracao,
 			@RequestParam(value = "ano") int ano, @RequestParam(value = "genero") String genero,
@@ -279,7 +279,7 @@ public class MusitecaController {
 
 	}
 	
-	@RequestMapping(value = "/carregarArtista", method = RequestMethod.POST)
+	@RequestMapping(value = "/carregarArtista", method = RequestMethod.GET)
 	public ResponseEntity<List<Artista>> carregarArtista(@RequestParam(value = "emailUsuario") String emailUsuario) {
 
 		Usuario usuario = findUsuario(emailUsuario);
@@ -288,8 +288,21 @@ public class MusitecaController {
 			return new ResponseEntity<List<Artista>>(artista, HttpStatus.OK);
 		} else {
 			List<Artista> artista = new ArrayList<Artista>();
-			return new ResponseEntity<List<Artista>>(artista, HttpStatus.OK);
+			return new ResponseEntity<List<Artista>>(artista, HttpStatus.NO_CONTENT);
 		}
+	}
+	@RequestMapping(value = "/carregarMusicas", method = RequestMethod.GET)
+	public ResponseEntity<Set<Musica>> carregarMusica(@RequestParam(value = "emailUsuario") String emailUsuario) {
+		
+		Usuario usuario = findUsuario(emailUsuario);
+		
+		if (usuario != null) {
+			Set<Musica> musicas = usuario.getMusiteca().getMusicasMusiteca();
+			return new ResponseEntity<Set<Musica>>(musicas, HttpStatus.OK);
+		}
+		Set<Musica> musicas = new HashSet<Musica>();
+		return new ResponseEntity<Set<Musica>>(musicas, HttpStatus.NO_CONTENT);
+		
 	}
 	
 	@RequestMapping(value = "/rmPlaylists", method = RequestMethod.GET)

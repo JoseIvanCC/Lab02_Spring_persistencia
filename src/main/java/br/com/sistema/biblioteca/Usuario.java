@@ -2,6 +2,7 @@ package br.com.sistema.biblioteca;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
@@ -13,6 +14,7 @@ import java.util.regex.Pattern;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToOne;
 
 import br.com.sistema.exception.StringInvalidaException;
@@ -35,7 +37,8 @@ public class Usuario implements Serializable{
 	@Column(name = "senha")
 	private String senha;
 	
-	@OneToOne(mappedBy = "usuario")
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinTable(name = "musiteca_e_usuario")
 	private Musiteca musitecaUsuario;
 	
 	@Id
