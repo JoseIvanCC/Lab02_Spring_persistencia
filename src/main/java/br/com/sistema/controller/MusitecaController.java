@@ -73,6 +73,11 @@ public class MusitecaController {
 		}
 	}
 	
+	@RequestMapping(value = "/hello", method = RequestMethod.GET)
+	public String helloWorld() {
+		return "hello world";
+	}
+	
 	
 	@RequestMapping(value = "/alterarNota", method = RequestMethod.GET)
 	public String alterarNota(@RequestParam(value = "nome") String nome, @RequestParam(value = "nota") int nota,
