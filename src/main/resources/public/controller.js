@@ -44,7 +44,7 @@ $scope.sair=function(){
 	}
 
 $scope.acessarMusiteca=function(usr){
-var baseURL = 'http://localhost:8080/loginUsuario?';
+var baseURL = 'http://silab3ufcg.herokuapp.com/loginUsuario?';
 		baseURL = baseURL+"email="+usr.email;
 		baseURL = baseURL+"&senha="+usr.senha;
 		$http.post(baseURL, httpConfigs).then(function(response){
@@ -61,13 +61,13 @@ var baseURL = 'http://localhost:8080/loginUsuario?';
 	};
 
   $scope.loadMusicas = function(){
-  	var baseURL = 'http://localhost:8080/carregarMusicas?';
+  	var baseURL = 'http://silab3ufcg.herokuapp.com/carregarMusicas?';
   	baseURL = baseURL + "emailUsuario=" + $scope.usuario.email;
   	$http.get(baseURL, httpConfigs).then(function(response){$scope.musicas = response.data;}).catch(function (error) {});
 
   }
   $scope.criarConta = function(usuario){
-		var baseURL = 'http://localhost:8080/cadastrarUsuario?';
+		var baseURL = 'http://silab3ufcg.herokuapp.com/cadastrarUsuario?';
 		baseURL = baseURL+"nome="+usuario.nome;
 		baseURL = baseURL+"&email="+usuario.email;
 		baseURL = baseURL+"&senha="+usuario.senha;
@@ -77,7 +77,7 @@ var baseURL = 'http://localhost:8080/loginUsuario?';
 	};
 
   $scope.carregarPlaylists = function() {
-    var baseURL = 'http://localhost:8080/carregarPlaylists?';
+    var baseURL = 'http://silab3ufcg.herokuapp.com/carregarPlaylists?';
     if ($scope.logado == true) {
       baseURL = baseURL+"emailUsuario="+$scope.usuario.email
     } else {
@@ -87,7 +87,7 @@ var baseURL = 'http://localhost:8080/loginUsuario?';
   }
 
   $scope.getArtistas = function() {
-    var baseURL = 'http://localhost:8080/carregarArtista?';
+    var baseURL = 'http://silab3ufcg.herokuapp.com/carregarArtista?';
     if ($scope.logado == true) {
       baseURL = baseURL+"emailUsuario="+$scope.usuario.email;
     } else {
@@ -98,7 +98,7 @@ var baseURL = 'http://localhost:8080/loginUsuario?';
   }
 
 $scope.getPlaylists = function() {
-    var baseURL = 'http://localhost:8080/carregarPlaylists?';
+    var baseURL = 'http://silab3ufcg.herokuapp.com/carregarPlaylists?';
     if ($scope.logado == true) {
       baseURL = baseURL+"emailUsuario="+$scope.usuario.email;
     } else {
@@ -109,7 +109,7 @@ $scope.getPlaylists = function() {
 }
 
   $scope.adicionaMusica = function(musica, album) {
-    var baseURL = 'http://localhost:8080/addMusic?';
+    var baseURL = 'http://silab3ufcg.herokuapp.com/addMusic?';
     baseURL = baseURL+"nome="+musica.nome;
     baseURL = baseURL+"&duracao="+musica.duracao;
     baseURL = baseURL+"&ano="+parseInt(musica.ano);
@@ -128,7 +128,7 @@ $scope.getPlaylists = function() {
   }
 
   $scope.adicionarArtista = function(nome, foto) {
-      var baseURL = 'http://localhost:8080/addArtista?';
+      var baseURL = 'http://silab3ufcg.herokuapp.com/addArtista?';
       baseURL = baseURL+"nome="+nome;
       baseURL = baseURL+"&foto="+foto;
       if ($scope.logado == true) {
@@ -143,7 +143,7 @@ $scope.getPlaylists = function() {
   }
 
   $scope.adicionarPlaylist = function(nomePlaylist) {
-    var baseURL = 'http://localhost:8080/addPlaylist?';
+    var baseURL = 'http://silab3ufcg.herokuapp.com/addPlaylist?';
     baseURL = baseURL+"nome="+nomePlaylist;
     if ($scope.logado == true) {
       baseURL = baseURL+"&emailUsuario="+$scope.usuario.email;
