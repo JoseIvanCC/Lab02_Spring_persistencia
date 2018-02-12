@@ -1,0 +1,35 @@
+.jumbotron {
+          width: 400px;
+          text-align: center;
+          margin-top: 20px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+        .table {
+          margin-top: 20px;
+        }
+
+        .form-control {
+          margin-bottom: 5px;
+        }
+
+        .gallery {
+          margin-top: 2%;
+          text-align: left;
+          display: inline-block;
+          position: relative;
+        }
+
+        #flutuar {
+    float: right;
+}
+
+.alinha {
+  text-align: left;
+    margin-top: 20px;
+}
+
+.letreiro {
+  color: white;
+  text-align: center;
+}
